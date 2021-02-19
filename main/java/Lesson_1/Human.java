@@ -1,6 +1,6 @@
 package Lesson_1;
 
-public class Human implements JumpableRunnable {
+public class Human implements   RunnableJumpable {
     int maxHeight;
     int maxLength;
     String name;

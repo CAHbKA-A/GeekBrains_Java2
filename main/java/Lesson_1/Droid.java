@@ -1,6 +1,6 @@
 package Lesson_1;
 
-public class Droid implements JumpableRunnable {
+public class Droid implements  RunnableJumpable {
     int maxHeight;
     int maxLength;
     String name;

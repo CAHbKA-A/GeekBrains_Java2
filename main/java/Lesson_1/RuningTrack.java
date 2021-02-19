@@ -15,7 +15,7 @@ public class RuningTrack {
         return "Дорожка длиной " + length + "м. ";
     }
 
-    public Boolean tryRun(JumpableRunnable runner) {
+    public Boolean tryRun(RunnableJumpable runner) {
         return (runner.getMaxLength() >= this.length);
     }
 }

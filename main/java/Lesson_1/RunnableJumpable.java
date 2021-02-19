@@ -1,11 +1,10 @@
 package Lesson_1;
 
-public interface JumpableRunnable {
-    void jump();
+public interface RunnableJumpable {
 
     void run();
+    void jump();
 
     int getMaxHeight();
-
     int getMaxLength();
 }
