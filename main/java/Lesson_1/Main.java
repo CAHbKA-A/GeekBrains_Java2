@@ -3,7 +3,7 @@ package Lesson_1;
 
 public class Main {
 
-    private static JumpableRunnable[] team;
+    private static RunnableJumpable[] team;
     private static Object[] obstacle;
 
     public static void main(String[] args) {
@@ -48,7 +48,7 @@ public class Main {
     }
 
     private static void createTeamObstracle() {
-        team = new JumpableRunnable[]{
+        team = new RunnableJumpable[]{
                 new Human(),
                 new Cat(),
                 new Droid(),

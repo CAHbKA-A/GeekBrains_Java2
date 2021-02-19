@@ -1,6 +1,6 @@
 package Lesson_1;
 
-public class Cat implements JumpableRunnable {
+public class Cat implements  RunnableJumpable {
     int maxHeight;
     int maxLength;
     String name;

@@ -13,7 +13,7 @@ public class Wall {
         return "Стена выстой " + height + "м. ";
     }
 
-    public Boolean tryJump(JumpableRunnable jumper) {
+    public Boolean tryJump(RunnableJumpable jumper) {
         return (jumper.getMaxHeight() >= this.height);
 
 
