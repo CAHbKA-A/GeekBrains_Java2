@@ -1,6 +1,6 @@
 package Lesson_2;
 
-public class MyArrayDataException extends Exception{
+public class MyArrayDataException extends IllegalAccessException{
    private int i;
     private int j;
 
