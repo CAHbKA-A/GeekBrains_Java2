@@ -2,15 +2,14 @@ package Lesson_5;
 
 import java.util.Arrays;
 
-public class DualMethod implements Runnable {
+public class DualMethod  {
     static final int size = 10000000;
     static final int h = size / 2;
     float[] arr = new float[size];
     float[] arr1 = new float[h];
     float[] arr2 = new float[h];
 
-    @Override
-    public void run() {
+    public void go() {
 
         Arrays.fill(arr, 1);
 

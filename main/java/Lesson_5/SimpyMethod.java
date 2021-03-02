@@ -2,12 +2,12 @@ package Lesson_5;
 
 import java.util.Arrays;
 
-public class SimpyMethod implements Runnable {
+public class SimpyMethod  {
     static final int size = 10000000;
     float[] arr = new float[size];
 
-    @Override
-    public void run() {
+
+    public void go() {
         Arrays.fill(arr, 1);
         long TimeStart = System.currentTimeMillis();
 
