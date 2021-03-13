@@ -7,6 +7,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static java.lang.Thread.sleep;
 
@@ -25,7 +27,8 @@ public class Client extends JFrame {
     private JButton buttonExit;
     private JPanel panelNorth;
     private JLabel label;
-
+    private JList userList;
+    private DefaultListModel userModel;
 
     public static void main(String[] args) {
         Client frame = new Client();
@@ -70,21 +73,28 @@ public class Client extends JFrame {
             try {
                 while (true) {
                     String serverMess = dis.readUTF();
-                    if (serverMess.equals("/q")) {
-                        // closeConnection();
-                        chat.append("Connection closed. Plz, reopen client window \n");
-                        break;
-                    }
+                    if (serverMess.startsWith("/")) {
 
-                    if (serverMess.equals("/authok")) {
-                        loginField.setVisible(false);
-                        passwordField.setVisible(false);
-                        loginButton.setVisible(false);
-                        chat.setText("You connected! Say Hello.\n");
-                        panelNorth.add(label);
-                        panelNorth.add(buttonExit);
+
+                        if (serverMess.equals("/authok")) {
+                            loginField.setVisible(false);
+                            passwordField.setVisible(false);
+                            loginButton.setVisible(false);
+                            chat.setText("You connected! Say Hello.\n");
+                            panelNorth.add(label);
+                            panelNorth.add(buttonExit);
+                        }
+                        if (serverMess.startsWith("/USERLIST")) {
+                            updateUserList(serverMess);
+                        }
+                        if (serverMess.equals("/q")) {
+                            // closeConnection();
+                            chat.append("Connection closed. Plz, reopen client window \n");
+                            break;
+                        }
+                    } else {
+                        chat.append(serverMess + "\n");
                     }
-                    chat.append(serverMess + "\n");
                 }
             } catch (IOException ignored) {
             }
@@ -143,132 +153,144 @@ public class Client extends JFrame {
         }
     }
 
+    private void updateUserList(String users) {
+        String[] parts = users.split("  ");
 
-    private void GUIClient() {
-        setBounds(200, 200, 500, 600);
-        setTitle("GeekChat");
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setAlwaysOnTop(true);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-
-        panelNorth = new JPanel();
-        panelNorth.setLayout(new GridLayout());
-
-
-        buttonExit = new JButton("Exit");
-        buttonExit.addActionListener(e -> {
-            sendMessage("/q");
-            closeConnection();
-            System.exit(0);
-        });
-
-        label = new JLabel("/w nick3 Привет");
-
-        loginField = new JTextField("A");
-        panelNorth.add(loginField);
-
-        passwordField = new JPasswordField("A");
-        panelNorth.add(passwordField);
-
-        loginButton = new JButton("Sing in");
-        panelNorth.add(loginButton);
-        loginButton.addActionListener(e -> sendMessage("/auth " + loginField.getText() + " " + passwordField.getText()));
-
-
-        panel.add(panelNorth, BorderLayout.NORTH);
-
-        chat = new JTextArea();
-        chat.setEditable(false);
-
-
-        // chat.add(new Scrollbar());
-
-        JScrollPane scrollPane = new JScrollPane(chat, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        panel.add(scrollPane, BorderLayout.CENTER);
-        JPanel panelSouth = new JPanel();
-        panelSouth.setLayout(new BorderLayout());
-
-
-        sayField = new JTextField("text");
-        panelSouth.add(sayField, BorderLayout.CENTER);
-        sayField.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == 10) {
-                    sendMessage();
-                    System.out.println("1");
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-            }
-        });
-
-        JButton sendButton = new JButton("SEND");
-        panelSouth.add(sendButton, BorderLayout.EAST);
-        sendButton.addActionListener(e -> sendMessage());
-
-        panel.add(panelSouth, BorderLayout.SOUTH);
-
-
-        add(panel);
-
-
-        addWindowListener(new WindowListener() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                if (dos != null) {
-                    try {
-                        dos.writeUTF("/q");
-                    } catch (IOException exception) {
-                        //exception.printStackTrace();
-                    } finally {
-                        closeConnection();
-                    }
-                }
-            }
-
-            @Override
-            public void windowClosed(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowIconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeiconified(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowActivated(WindowEvent e) {
-
-            }
-
-            @Override
-            public void windowDeactivated(WindowEvent e) {
-
-            }
-        });
-
-        setVisible(true);
+        userList.removeAll();
+        userModel.removeAllElements();
+        for (int i = 1; i < parts.length; i++) {
+            userModel.addElement(parts[i]);
+        }
     }
 
-}
+        private void GUIClient () {
+            setBounds(200, 200, 500, 600);
+            setTitle("GeekChat");
+            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            setAlwaysOnTop(true);
+
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout());
+
+            panelNorth = new JPanel();
+            panelNorth.setLayout(new GridLayout());
+
+
+            buttonExit = new JButton("Exit");
+            buttonExit.addActionListener(e -> {
+                sendMessage("/q");
+                closeConnection();
+                System.exit(0);
+            });
+
+            label = new JLabel("/w nick3 Привет");
+
+            loginField = new JTextField("A");
+            panelNorth.add(loginField);
+
+            passwordField = new JPasswordField("A");
+            panelNorth.add(passwordField);
+
+            loginButton = new JButton("Sing in");
+            panelNorth.add(loginButton);
+            loginButton.addActionListener(e -> sendMessage("/auth " + loginField.getText() + " " + passwordField.getText()));
+
+
+            panel.add(panelNorth, BorderLayout.NORTH);
+
+            chat = new JTextArea();
+            chat.setEditable(false);
+
+
+            JScrollPane scrollPane = new JScrollPane(chat, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            panel.add(scrollPane, BorderLayout.CENTER);
+            JPanel panelSouth = new JPanel();
+            panelSouth.setLayout(new BorderLayout());
+
+
+            sayField = new JTextField("text");
+            panelSouth.add(sayField, BorderLayout.CENTER);
+            sayField.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent e) {
+
+                }
+
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    if (e.getKeyCode() == 10) {
+                        sendMessage();
+                        System.out.println("1");
+                    }
+                }
+
+                @Override
+                public void keyReleased(KeyEvent e) {
+
+                }
+            });
+
+            JButton sendButton = new JButton("SEND");
+            panelSouth.add(sendButton, BorderLayout.EAST);
+            sendButton.addActionListener(e -> sendMessage());
+
+            panel.add(panelSouth, BorderLayout.SOUTH);
+
+            userModel = new DefaultListModel();
+            userModel.add(0, "UserList");
+            userList = new JList(userModel);
+            JScrollPane scrollPaneUserList = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            panel.add(scrollPaneUserList, BorderLayout.EAST);
+
+            add(panel);
+
+
+            addWindowListener(new WindowListener() {
+                @Override
+                public void windowOpened(WindowEvent e) {
+
+                }
+
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    if (dos != null) {
+                        try {
+                            dos.writeUTF("/q");
+                        } catch (IOException exception) {
+                            //exception.printStackTrace();
+                        } finally {
+                            closeConnection();
+                        }
+                    }
+                }
+
+                @Override
+                public void windowClosed(WindowEvent e) {
+
+                }
+
+                @Override
+                public void windowIconified(WindowEvent e) {
+
+                }
+
+                @Override
+                public void windowDeiconified(WindowEvent e) {
+
+                }
+
+                @Override
+                public void windowActivated(WindowEvent e) {
+
+                }
+
+                @Override
+                public void windowDeactivated(WindowEvent e) {
+
+                }
+            });
+
+            setVisible(true);
+        }
+
+    }
