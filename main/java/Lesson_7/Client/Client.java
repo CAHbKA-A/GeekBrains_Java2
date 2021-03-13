@@ -72,7 +72,7 @@ public class Client extends JFrame {
                     String serverMess = dis.readUTF();
                     if (serverMess.equals("/q")) {
                         // closeConnection();
-                        chat.append(" Connection closed. \n");
+                        chat.append("Connection closed. Plz, reopen client window \n");
                         break;
                     }
 
