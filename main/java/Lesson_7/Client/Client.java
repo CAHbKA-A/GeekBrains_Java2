@@ -181,10 +181,12 @@ public class Client extends JFrame {
 
         chat = new JTextArea();
         chat.setEditable(false);
-        chat.add(new Scrollbar());
-        panel.add(chat, BorderLayout.CENTER);
 
 
+        // chat.add(new Scrollbar());
+
+        JScrollPane scrollPane = new JScrollPane(chat, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        panel.add(scrollPane, BorderLayout.CENTER);
         JPanel panelSouth = new JPanel();
         panelSouth.setLayout(new BorderLayout());
 
@@ -216,6 +218,7 @@ public class Client extends JFrame {
         sendButton.addActionListener(e -> sendMessage());
 
         panel.add(panelSouth, BorderLayout.SOUTH);
+
 
         add(panel);
 
