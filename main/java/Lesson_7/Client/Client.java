@@ -1,6 +1,8 @@
 package Lesson_7.Client;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.DataInputStream;
@@ -113,7 +115,7 @@ public class Client extends JFrame {
                 e.printStackTrace();
             }
         }
-    }
+     }
 
     private void sendMessage(String message) {
 
@@ -155,8 +157,6 @@ public class Client extends JFrame {
 
     private void updateUserList(String users) {
         String[] parts = users.split("  ");
-
-        //userList.removeAll();
         userModel.removeAllElements();
         for (int i = 1; i < parts.length; i++) {
             userModel.addElement(parts[i]);
@@ -245,6 +245,18 @@ public class Client extends JFrame {
         userList = new JList(userModel);
         JScrollPane scrollPaneUserList = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         panel.add(scrollPaneUserList, BorderLayout.EAST);
+
+        //send private message by click userName
+        userList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                String to = (String) userList.getSelectedValue();
+                if (to!=null) {//фиксим баг если клиент вышел
+                    sayField.setText("/w " + to + " ");
+                }
+            }
+        });
+
 
         add(panel);
 
