@@ -81,8 +81,8 @@ public class Client extends JFrame {
                             passwordField.setVisible(false);
                             loginButton.setVisible(false);
                             chat.setText("You connected! Say Hello.\n");
-                            panelNorth.add(label);
-                            panelNorth.add(buttonExit);
+                            label.setVisible(true);
+                            buttonExit.setVisible(true);
                         }
                         if (serverMess.startsWith("/USERLIST")) {
                             updateUserList(serverMess);
@@ -156,141 +156,145 @@ public class Client extends JFrame {
     private void updateUserList(String users) {
         String[] parts = users.split("  ");
 
-        userList.removeAll();
+        //userList.removeAll();
         userModel.removeAllElements();
         for (int i = 1; i < parts.length; i++) {
             userModel.addElement(parts[i]);
         }
     }
 
-        private void GUIClient () {
-            setBounds(200, 200, 500, 600);
-            setTitle("GeekChat");
-            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            setAlwaysOnTop(true);
+    private void GUIClient() {
+        setBounds(200, 200, 500, 600);
+        setTitle("GeekChat");
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setAlwaysOnTop(true);
 
-            JPanel panel = new JPanel();
-            panel.setLayout(new BorderLayout());
+        JPanel panel = new JPanel();
+        panel.setLayout(new BorderLayout());
 
-            panelNorth = new JPanel();
-            panelNorth.setLayout(new GridLayout());
-
-
-            buttonExit = new JButton("Exit");
-            buttonExit.addActionListener(e -> {
-                sendMessage("/q");
-                closeConnection();
-                System.exit(0);
-            });
-
-            label = new JLabel("/w nick3 Привет");
-
-            loginField = new JTextField("A");
-            panelNorth.add(loginField);
-
-            passwordField = new JPasswordField("A");
-            panelNorth.add(passwordField);
-
-            loginButton = new JButton("Sing in");
-            panelNorth.add(loginButton);
-            loginButton.addActionListener(e -> sendMessage("/auth " + loginField.getText() + " " + passwordField.getText()));
+        panelNorth = new JPanel();
+        panelNorth.setLayout(new GridLayout());
 
 
-            panel.add(panelNorth, BorderLayout.NORTH);
+        buttonExit = new JButton("Exit");
+        buttonExit.setVisible(false);
+        buttonExit.addActionListener(e -> {
+            sendMessage("/q");
+            closeConnection();
+            System.exit(0);
+        });
 
-            chat = new JTextArea();
-            chat.setEditable(false);
+        label = new JLabel("/w nick3 Привет");
+        label.setVisible(false);
+
+        loginField = new JTextField("A");
+        panelNorth.add(loginField);
+
+        passwordField = new JPasswordField("A");
+        panelNorth.add(passwordField);
+
+        loginButton = new JButton("Sing in");
+        panelNorth.add(loginButton);
+        loginButton.addActionListener(e -> sendMessage("/auth " + loginField.getText() + " " + passwordField.getText()));
+
+        panelNorth.add(label);
+        panelNorth.add(buttonExit);
+
+        panel.add(panelNorth, BorderLayout.NORTH);
+
+        chat = new JTextArea();
+        chat.setEditable(false);
 
 
-            JScrollPane scrollPane = new JScrollPane(chat, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            panel.add(scrollPane, BorderLayout.CENTER);
-            JPanel panelSouth = new JPanel();
-            panelSouth.setLayout(new BorderLayout());
+        JScrollPane scrollPane = new JScrollPane(chat, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        JPanel panelSouth = new JPanel();
+        panelSouth.setLayout(new BorderLayout());
 
 
-            sayField = new JTextField("text");
-            panelSouth.add(sayField, BorderLayout.CENTER);
-            sayField.addKeyListener(new KeyListener() {
-                @Override
-                public void keyTyped(KeyEvent e) {
+        sayField = new JTextField("text");
+        panelSouth.add(sayField, BorderLayout.CENTER);
+        sayField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
 
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == 10) {
+                    sendMessage();
+                    System.out.println("1");
                 }
+            }
 
-                @Override
-                public void keyPressed(KeyEvent e) {
-                    if (e.getKeyCode() == 10) {
-                        sendMessage();
-                        System.out.println("1");
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+
+        JButton sendButton = new JButton("SEND");
+        panelSouth.add(sendButton, BorderLayout.EAST);
+        sendButton.addActionListener(e -> sendMessage());
+
+        panel.add(panelSouth, BorderLayout.SOUTH);
+
+        userModel = new DefaultListModel();
+        userModel.add(0, "UserList");
+        userList = new JList(userModel);
+        JScrollPane scrollPaneUserList = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        panel.add(scrollPaneUserList, BorderLayout.EAST);
+
+        add(panel);
+
+
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (dos != null) {
+                    try {
+                        dos.writeUTF("/q");
+                    } catch (IOException exception) {
+                        //exception.printStackTrace();
+                    } finally {
+                        closeConnection();
                     }
                 }
+            }
 
-                @Override
-                public void keyReleased(KeyEvent e) {
+            @Override
+            public void windowClosed(WindowEvent e) {
 
-                }
-            });
+            }
 
-            JButton sendButton = new JButton("SEND");
-            panelSouth.add(sendButton, BorderLayout.EAST);
-            sendButton.addActionListener(e -> sendMessage());
+            @Override
+            public void windowIconified(WindowEvent e) {
 
-            panel.add(panelSouth, BorderLayout.SOUTH);
+            }
 
-            userModel = new DefaultListModel();
-            userModel.add(0, "UserList");
-            userList = new JList(userModel);
-            JScrollPane scrollPaneUserList = new JScrollPane(userList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            panel.add(scrollPaneUserList, BorderLayout.EAST);
+            @Override
+            public void windowDeiconified(WindowEvent e) {
 
-            add(panel);
+            }
 
+            @Override
+            public void windowActivated(WindowEvent e) {
 
-            addWindowListener(new WindowListener() {
-                @Override
-                public void windowOpened(WindowEvent e) {
+            }
 
-                }
+            @Override
+            public void windowDeactivated(WindowEvent e) {
 
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    if (dos != null) {
-                        try {
-                            dos.writeUTF("/q");
-                        } catch (IOException exception) {
-                            //exception.printStackTrace();
-                        } finally {
-                            closeConnection();
-                        }
-                    }
-                }
+            }
+        });
 
-                @Override
-                public void windowClosed(WindowEvent e) {
-
-                }
-
-                @Override
-                public void windowIconified(WindowEvent e) {
-
-                }
-
-                @Override
-                public void windowDeiconified(WindowEvent e) {
-
-                }
-
-                @Override
-                public void windowActivated(WindowEvent e) {
-
-                }
-
-                @Override
-                public void windowDeactivated(WindowEvent e) {
-
-                }
-            });
-
-            setVisible(true);
-        }
-
+        setVisible(true);
     }
+
+}
