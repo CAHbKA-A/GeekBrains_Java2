@@ -51,12 +51,14 @@ public class Server {
     static synchronized void subScribe(ClientHandler client) {
         clientList.add(client);
         sendMessageToAll(getTime() + "  " + client.getName() + " joined the chat!!!");
+        sendMessageToAll(createUserList());
     }
 
     static synchronized void unSubScribe(ClientHandler client) {
         clientList.remove(client);
         sendMessageToAll(getTime() + "  " + client.getName() + " Leave the chat!!!");
         System.out.println(client.getName() + " disconnected");
+        sendMessageToAll(createUserList());
     }
 
     public AuthenticationService getAuthService() {
@@ -74,5 +76,14 @@ public class Server {
     public static String getTime() {
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         return format.format(Calendar.getInstance().getTime());
+    }
+
+    static synchronized String createUserList() {
+        StringBuilder userList= new StringBuilder("/USERLIST");
+        for (ClientHandler client : clientList) {
+            userList.append("  ")
+                    .append(client.getName());
+        }
+         return userList.toString();
     }
 }

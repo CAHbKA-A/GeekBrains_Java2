@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 
 public class ClientHandler {
@@ -23,10 +25,10 @@ public class ClientHandler {
         isAuthorized = false;
         this.server = server;
         this.socket = socket;
+
         try {
             this.dis = new DataInputStream(socket.getInputStream());
             this.dos = new DataOutputStream(socket.getOutputStream());
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -35,18 +37,26 @@ public class ClientHandler {
             while (!isAuthorized) {
 
                 try {
+                    socket.setSoTimeout(120000);
                     String inputMessage = readMessage();
                     System.out.println(inputMessage);
                     authentication(inputMessage);
+
+                } catch (SocketTimeoutException socketTimeoutException) {
+                    System.out.println("timeout socket");
+                    sendMessage("Connection TimeOut!");
+                    sendMessage("/q");
+                    closeConnection();
+
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     break; // если запустить клиент и не авторизовываясь закрыть окно.
                 }
-
             }
 
             try {
                 while (true) {
+                    socket.setSoTimeout(0);
                     String inputMessage = readMessage();
                     System.out.println(inputMessage);
 
@@ -63,24 +73,21 @@ public class ClientHandler {
                         try {
                             if (Server.sendPrivateMessage(inputMessage.substring(d + 1), this.name, inputMessage.substring(0, d))) {
                                 sendMessage("Message delivered.");
-
                             } else {
-
                                 sendMessage("No such user.");
                             }
                         } catch (StringIndexOutOfBoundsException e) {
                             sendMessage("Empty message.");
-
                         }
-
                     } else
-
-
                         Server.sendMessageToAll(Server.getTime() + "  " + this.name + ": " + inputMessage);
-
                 }
 
-            } catch (IOException e) {
+            }
+            catch (SocketException socketTimeoutException2) {
+                System.out.println("Socket already closed");
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }).start();
